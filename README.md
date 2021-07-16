@@ -71,6 +71,7 @@ In the time I had, I focused mainly on separating out code into separate modular
 * Ensure that Account.Id is set appropriately during create and updates. This may fall out of creating a sepearate AccountDto though..?
 * Rename AccountsService to AccountService (that ones my bad but the plural naming should really be consistent)
 * Ensure that format of api responses are the same as before. There is some setup in WebApiConfig that has not yet been replaced.
+* I don't even know what to make of the entry point for this program. Cutting it out completely seemed like a good option, so that which is something the Program.cs and Startup.cs classes would fix anyway
 * Write integration tests for the API. In an actual work environment, I would not attempt a big refactor like this without at least gettting some integration tests set up.
 * Write unit tests for classes. This should be a lot easier now that the classes are more modular.
 * Upgrade further to latest LTS version of dotnetcore.
