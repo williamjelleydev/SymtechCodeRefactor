@@ -1,85 +1,67 @@
-﻿using refactor_this.Models;
+﻿using Microsoft.AspNetCore.Mvc;
+using refactor_this.Models;
+using refactor_this.Services;
 using System;
 using System.Collections.Generic;
-using System.Data.SqlClient;
-using System.Linq;
-using System.Net.Http;
-using System.Web;
-using System.Web.Http;
 
 namespace refactor_this.Controllers
 {
-    public class AccountController : ApiController
+    [ApiController]
+    [Route("api/Accounts")]
+    public class AccountController : ControllerBase
     {
-        [HttpGet, Route("api/Accounts/{id}")]
-        public IHttpActionResult GetById(Guid id)
+        private readonly IAccountsService _accountsService;
+
+        public AccountController(IAccountsService accountsService)
         {
-            using (var connection = Helpers.NewConnection())
-            {
-                return Ok(Get(id));
-            }
+            _accountsService = accountsService;
         }
 
-        [HttpGet, Route("api/Accounts")]
-        public IHttpActionResult Get()
+        //[HttpGet, Route("api/Accounts/{id}")]
+        [HttpGet("{id}")]
+        public IActionResult GetById(Guid id)
         {
-            using (var connection = Helpers.NewConnection())
-            {
-                SqlCommand command = new SqlCommand($"select Id from Accounts", connection);
-                connection.Open();
-                var reader = command.ExecuteReader();
-                var accounts = new List<Account>();
-                while (reader.Read())
-                {
-                    var id = Guid.Parse(reader["Id"].ToString());
-                    var account = Get(id);
-                    accounts.Add(account);
-                }
-
-                return Ok(accounts);
-            }
+            // TODO: return NotFound() if account does not exist
+            return Ok(_accountsService.GetAccount(id));
         }
 
-        private Account Get(Guid id)
+        //[HttpGet, Route("api/Accounts")]
+        [HttpGet]
+        public IActionResult GetAccounts()
         {
-            using (var connection = Helpers.NewConnection())
-            {
-                SqlCommand command = new SqlCommand($"select * from Accounts where Id = '{id}'", connection);
-                connection.Open();
-                var reader = command.ExecuteReader();
-                if (!reader.Read())
-                    throw new ArgumentException();
-
-                var account = new Account(id);
-                account.Name = reader["Name"].ToString();
-                account.Number = reader["Number"].ToString();
-                account.Amount = float.Parse(reader["Amount"].ToString());
-                return account;
-            }
+            return Ok(_accountsService.GetAccounts());
         }
 
-        [HttpPost, Route("api/Accounts")]
-        public IHttpActionResult Add(Account account)
+
+        [HttpPost]
+        public IActionResult Add(Account account)
         {
-            account.Save();
-            return Ok();
+            _accountsService.AddNewAccount(account);
+            // TODO: need some way of validating that the account _actually_ got persisted to database successfully
+            // It would also be nice to have a different input AccountDto from the persisted Account model
+            // TODO: CreatedAtRoute() would be a better option here, so consumer can see where to locate newly created resouce
+            return Ok(account);
         }
 
-        [HttpPut, Route("api/Accounts/{id}")]
-        public IHttpActionResult Update(Guid id, Account account)
+        // I'm not in charge of API decisions, but generally PATCH's are nicer to deal with than PUTs so should be considered
+        [HttpPut("{id}")]
+        public IActionResult Update(Guid id, Account account)
         {
-            var existing = Get(id);
-            existing.Name = account.Name;
-            existing.Save();
-            return Ok();
+            var existingAccount = _accountsService.GetAccount(id);
+            // TODO: null checking on if account actually exists
+            // This would be way cleaner and easier to build on using models
+            existingAccount.Name = account.Name;
+            _accountsService.UpdateExistingAccount(existingAccount);
+            return NoContent();
         }
 
-        [HttpDelete, Route("api/Accounts/{id}")]
-        public IHttpActionResult Delete(Guid id)
+        [HttpDelete("{id}")]
+        public IActionResult Delete(Guid id)
         {
-            var existing = Get(id);
-            existing.Delete();
-            return Ok();
+            var existingAccount = _accountsService.GetAccount(id);
+            // TODO: check if it exists and if not return NotFound()
+            _accountsService.DeleteExistingAccount(existingAccount);
+            return NoContent();
         }
     }
 }

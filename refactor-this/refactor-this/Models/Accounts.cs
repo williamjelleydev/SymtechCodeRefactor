@@ -8,8 +8,12 @@ namespace refactor_this.Models
 {
     public class Account
     {
+        // TODO: attempt to make this "isNew" field redundant, by making calling code more sensible
         private bool isNew;
 
+        // TODO: confirm the best way to make sure that Id does get set with new value for a new account
+        // Mayve it does already? Or there is an attribute to help with this? Or I should seperate out a 
+        // AccountOnCreationDto and AccountOnUpdateDto to make things really clear??
         public Guid Id { get; set; }
 
         public string Name { get; set; }
@@ -18,8 +22,10 @@ namespace refactor_this.Models
 
         public float Amount { get; set; }
 
+        // TODO: read above comments on what to do about this isNew and Id generation..
         public Account()
         {
+
             isNew = true;
         }
 
@@ -27,31 +33,7 @@ namespace refactor_this.Models
         {
             isNew = false;
             Id = id;
-        }
-
-        public void Save()
-        {
-            using (var connection = Helpers.NewConnection())
-            {
-                SqlCommand command;
-                if (isNew)
-                    command = new SqlCommand($"insert into Accounts (Id, Name, Number, Amount) values ('{Guid.NewGuid()}', '{Name}', {Number}, 0)", connection);
-                else
-                    command = new SqlCommand($"update Accounts set Name = '{Name}' where Id = '{Id}'", connection);
-
-                connection.Open();
-                command.ExecuteNonQuery();
-            }
-        }
-
-        public void Delete()
-        {
-            using (var connection = Helpers.NewConnection())
-            {
-                SqlCommand command = new SqlCommand($"delete from Accounts where Id = '{Id}'", connection);
-                connection.Open();
-                command.ExecuteNonQuery();
-            }
+            // TODO: would be better off letting a database model handle stuff like creating new ids..
         }
     }
 }
