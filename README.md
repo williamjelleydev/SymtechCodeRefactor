@@ -45,7 +45,7 @@ Models should conform to the following formats:
 ```
 
 # Changes I Have made
-In the time I had, I focused mainly on separating out code into separate modular components/classes. This makes the code more readable, testable, and easier to change. As a next step I attempted to upgrade to .NetCore 2.1 and use AspNetCore MVC for the controllers, in hindsight this was a bit much to chew off in an hours. As the code is, there are still issues trying to connect to the database for some reason. But in saying that, I had issues figuring out how to inject my new classes/interfaces into the Controllers, and when you are having issues with old libraries/frameworks - moving forward and upgrading is often the best option/easiest anyway.
+In the time I had, I focused mainly on separating out code into separate modular components/classes. This makes the code more readable, testable, and easier to change. As a next step I attempted to upgrade to .NetCore 2.1 and use AspNetCore MVC for the controllers, in hindsight this was a bit much to chew off in an hour. As the code is, there are still issues trying to connect to the database for some reason. But in saying that, I had issues figuring out how to inject my new classes/interfaces into the Controllers, and when you are having issues with old libraries/frameworks - moving forward and upgrading is often the best option/easiest anyway.
 
 
 ## Here are some specifics of what I have changed:
@@ -65,7 +65,7 @@ In the time I had, I focused mainly on separating out code into separate modular
 * Get the DataConnectionProvider.GetConnection() method working, my limited experience in mssql probably hindered me here. Validation of the connection string passed into DataConnectionProvider as well.
 * Create an appsettings.json file, and put the database connection details in there. (If we started putting passwords in the connection string then would need another option though)
 * Obviously tidying up my sporadic commented out code everywhere.
-* It would probably make sense to have a separate AccountDto that the user/clien interacts with and a separate AccountModel that the database can interact with. Same applies for transaction.
+* It would probably make sense to have a separate AccountDto that the user/client interacts with and a separate AccountModel that the database can interact with. Same applies for transaction.
 * Minor but it triggers me that Accounts.cs is plural when the class name is Account - they should match.
 * Remove the now redundant isNew field from Account. It's no longer needed after moving logic into AccountsService
 * Ensure that Account.Id is set appropriately during create and updates. This may fall out of creating a sepearate AccountDto though..?
